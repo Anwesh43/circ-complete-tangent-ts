@@ -30,3 +30,49 @@ class ScaleUtil {
         return Math.sin(scale * Math.PI)
     }
 }
+
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()
+    }
+
+    static drawCircle(context : CanvasRenderingContext2D, r : number, scale : number) {
+        context.beginPath()
+        for (var i = 0; i <= 360 * scale; i++) {
+            const x = r * Math.cos(i * (Math.PI / 180))
+            const y = r * Math.sin(i * (Math.PI / 180))
+            if (i == 0) {
+
+            } else {
+                context.lineTo(x, y)
+            }
+        }
+        context.stroke()
+    }
+
+    static drawCircCompleteTangent(context : CanvasRenderingContext2D, scale : number) {
+        const r : number = Math.min(w, h) / sizeFactor
+        const sf : number = ScaleUtil.sinify(scale) 
+        context.save()
+        context.translate(w / 2, h / 2)
+        DrawingUtil.drawCircle(context, r, ScaleUtil.divideScale(sf, 0, parts))
+        for (var j = 0; j < lines; j++) {
+            context.save()
+            context.rotate(gap * j)
+            DrawingUtil.drawLine(context, r, -r, r, -r + 2 * r * ScaleUtil.divideScale(sf, j, parts))
+            context.restore()
+        }        
+        context.restore()
+    }
+
+    static drawCCTNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor 
+        context.strokeStyle = colors[i]
+        DrawingUtil.drawCircCompleteTangent(context, scale)
+    }
+}
