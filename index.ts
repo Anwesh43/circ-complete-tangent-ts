@@ -59,17 +59,20 @@ class DrawingUtil {
         const sf : number = ScaleUtil.sinify(scale) 
         context.save()
         context.translate(w / 2, h / 2)
+        context.rotate(ScaleUtil.divideScale(sf, 5, parts) * Math.PI / 2)
         DrawingUtil.drawCircle(context, r, ScaleUtil.divideScale(sf, 0, parts))
         for (var j = 0; j < lines; j++) {
+            const a : number = r * 0.5 * ScaleUtil.divideScale(sf, j + 1, parts)
             context.save()
             context.rotate(gap * j)
-            DrawingUtil.drawLine(context, r, -r, r, -r + 2 * r * ScaleUtil.divideScale(sf, j, parts))
+            DrawingUtil.drawLine(context, r, -a, r, a)
             context.restore()
         }        
         context.restore()
     }
 
     static drawCCTNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        //console.log(scale)
         context.lineCap = 'round'
         context.lineWidth = Math.min(w, h) / strokeFactor 
         context.strokeStyle = colors[i]
@@ -87,6 +90,7 @@ class Stage {
         this.canvas.width = w 
         this.canvas.height = h 
         this.context = this.canvas.getContext('2d')
+        document.body.appendChild(this.canvas)
     }
 
     render() {
@@ -126,10 +130,11 @@ class State {
 
     update(cb : Function) {
         this.scale += this.dir * scGap 
+        //console.log("SCALE", this.scale)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir 
             this.dir = 0 
-            this.dir = 1 - 2 * this.prevScale 
+            this.prevScale = this.scale
             cb()
         }
     }
